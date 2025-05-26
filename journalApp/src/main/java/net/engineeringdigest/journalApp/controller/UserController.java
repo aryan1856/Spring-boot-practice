@@ -18,7 +18,8 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody User user){
-        return userService.createUser(user);
+//        return userService.createUser(user);
+        return userService.tempSaveUser(user);
     }
 
     @GetMapping
