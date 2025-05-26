@@ -5,8 +5,11 @@ import net.engineeringdigest.journalApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.Authenticator;
 import java.util.List;
 
 @RestController
@@ -16,24 +19,21 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody User user){
-//        return userService.createUser(user);
-        return userService.tempSaveUser(user);
-    }
-
     @GetMapping
-    public ResponseEntity<?> getAll(){
+    public ResponseEntity<?> getAll() {
         return userService.getAll();
     }
 
-    @PutMapping("/update/{username}")
-    public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable String username){
-        return userService.updateUser(user, username);
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(@RequestBody User user) {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.updateUser(user, name);
     }
 
-    @DeleteMapping("/delete/{username}")
-    public ResponseEntity<?> deleteUser(@PathVariable String username){
-        return userService.deleteUser(username);
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteUser() {
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userService.deleteUser(name);
     }
 }
+

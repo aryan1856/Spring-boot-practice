@@ -51,14 +51,12 @@ public class UserService {
     public ResponseEntity<?> updateUser(User user, String username) {
         try {
             User existingUser = userRepository.findByUsername(username);
-            if(existingUser == null)
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user doesn't exists");
             if(user.getUsername() != null)
                 existingUser.setUsername(user.getUsername());
             if(user.getAge() != null)
                 existingUser.setAge((user.getAge()));
             if(user.getPassword() != null)
-                existingUser.setPassword(user.getPassword());
+                existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(existingUser);
             return ResponseEntity.status(HttpStatus.OK).body("user updated successfully");
         }catch (Exception e){
@@ -69,10 +67,6 @@ public class UserService {
     public ResponseEntity<?> deleteUser(String username) {
         try {
             User user = userRepository.findByUsername(username);
-            if(user==null)
-                return ResponseEntity.
-                        status(HttpStatus.NOT_FOUND).
-                        body("User not found");
             userRepository.delete(user);
             return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
         }catch (Exception e) {

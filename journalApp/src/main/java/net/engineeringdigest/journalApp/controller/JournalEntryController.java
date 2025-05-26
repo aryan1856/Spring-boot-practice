@@ -6,6 +6,7 @@ import net.engineeringdigest.journalApp.service.UserService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,17 +21,17 @@ public class JournalEntryController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("{username}")
-    public boolean createEntry(@RequestBody Journal journal,
-                               @PathVariable String username){
-        journalEntryService.saveEntry(journal, username);
+    @PostMapping("/create")
+    public boolean createEntry(@RequestBody Journal journal){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        journalEntryService.saveEntry(journal, name);
         return true;
     }
 
-    @GetMapping
-    public ResponseEntity<?> showEntries(){
-        return journalEntryService.showEntries();
-    }
+//    @GetMapping
+//    public ResponseEntity<?> showEntries(){
+//        return journalEntryService.showEntries();
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable String id){
@@ -43,9 +44,10 @@ public class JournalEntryController {
         return journalEntryService.findByIdAndUpdate(journal);
     }
 
-    @GetMapping("/u/{username}")
-    public ResponseEntity<?> getAllByUsername(@PathVariable String username){
-        return journalEntryService.findByUsername(username);
+    @GetMapping
+    public ResponseEntity<?> getAllByUsername(){
+        String name = SecurityContextHolder.getContext().getAuthentication().getName();
+        return journalEntryService.findByUsername(name);
     }
 
     @DeleteMapping("/{username}/{id}")
