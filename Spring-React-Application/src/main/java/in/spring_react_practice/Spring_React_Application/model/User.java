@@ -3,17 +3,15 @@ package in.spring_react_practice.Spring_React_Application.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import in.spring_react_practice.Spring_React_Application.dto.RestaurantDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class User {
 
     @Id
@@ -25,6 +23,7 @@ public class User {
     private String password;
     private USER_ROLE role;
 
+
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
     private List<Order> orders = new ArrayList<>();
@@ -34,5 +33,4 @@ public class User {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
-
 }
