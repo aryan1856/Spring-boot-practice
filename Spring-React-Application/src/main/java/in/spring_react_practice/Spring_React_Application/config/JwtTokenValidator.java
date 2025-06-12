@@ -25,14 +25,25 @@ public class JwtTokenValidator extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String jwt = request.getHeader(JwtConstant.JWT_HEADER);
 
-        if(jwt!=null){
+        // Skip validation for public endpoints
+        String path = request.getRequestURI();
+        if (path.startsWith("/auth/register") || path.startsWith("/auth/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Token validation
+        String jwt = request.getHeader(JwtConstant.JWT_HEADER);
+        if (jwt != null && jwt.startsWith("Bearer ")) {
             jwt = jwt.substring(7);
             try {
-                SecretKey key = Keys.hmacShaKeyFor((JwtConstant.SECRET_KEY.getBytes()));
-                Claims claims = Jwts.parserBuilder().setSigningKey(key)
-                        .build().parseClaimsJws(jwt).getBody();
+                SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
+                Claims claims = Jwts.parserBuilder()
+                        .setSigningKey(key)
+                        .build()
+                        .parseClaimsJws(jwt)
+                        .getBody();
 
                 String email = String.valueOf(claims.get("email"));
                 String authorities = String.valueOf(claims.get("authorities"));
@@ -41,10 +52,12 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                 Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, auth);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            } catch (Exception e){
+            } catch (Exception e) {
                 throw new BadCredentialsException("Invalid token...");
             }
         }
+
         filterChain.doFilter(request, response);
     }
+
 }
