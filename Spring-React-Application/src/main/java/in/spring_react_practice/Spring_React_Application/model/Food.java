@@ -1,5 +1,6 @@
 package in.spring_react_practice.Spring_React_Application.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,11 +37,12 @@ public class Food {
     private boolean isVegetarian;
     private boolean isSeasonal;
 
+    @JsonIgnore
     @ManyToOne
     private Restaurant restaurant;
 
     @ManyToMany
-    private List<IngredientsItem> ingredients = new ArrayList<>();
+    private List<IngredientsItem> ingredientsItems = new ArrayList<>();
 
     private Date creationDate;
 
