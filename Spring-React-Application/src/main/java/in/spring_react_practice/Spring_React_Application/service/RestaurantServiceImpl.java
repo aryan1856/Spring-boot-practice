@@ -29,6 +29,9 @@ public class RestaurantServiceImpl implements RestaurantService{
 
     @Override
     public Restaurant createRestaurant(CreateRestaurantRequest createRestaurantRequest, User user) {
+
+        System.out.println(createRestaurantRequest.getAddress());
+
         Address address = addressRepository.save(createRestaurantRequest.getAddress());
 
         Restaurant restaurant = new Restaurant();
@@ -103,11 +106,19 @@ public class RestaurantServiceImpl implements RestaurantService{
        dto.setTitle(restaurant.getName());
        dto.setId(id);
 
-       if(user.getFavorites().contains(dto))
-           user.getFavorites().remove(dto);
-       else
-           user.getFavorites().add(dto);
-       userRepository.save(user);
+        List<RestaurantDTO> favorites = user.getFavorites();
+        Optional<RestaurantDTO> match = favorites.stream()
+                .filter(fav -> fav.getId().equals(dto.getId()))
+                .findFirst();
+
+        if (match.isPresent()) {
+            favorites.remove(match.get());
+        } else {
+            favorites.add(dto);
+        }
+
+
+        userRepository.save(user);
        return dto;
     }
 
