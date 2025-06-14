@@ -2,9 +2,11 @@ package in.spring_react_practice.Spring_React_Application.controller;
 
 import in.spring_react_practice.Spring_React_Application.model.Cart;
 import in.spring_react_practice.Spring_React_Application.model.CartItem;
+import in.spring_react_practice.Spring_React_Application.model.User;
 import in.spring_react_practice.Spring_React_Application.request.AddCartItemRequest;
 import in.spring_react_practice.Spring_React_Application.request.UpdateCartItemRequest;
 import in.spring_react_practice.Spring_React_Application.service.CartService;
+import in.spring_react_practice.Spring_React_Application.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+    @Autowired
+    private UserService userService;
 
     @PutMapping("/cart/add")
     public ResponseEntity<CartItem> addItemToCart(@RequestBody AddCartItemRequest req,
@@ -44,14 +48,16 @@ public class CartController {
     @PutMapping("/cart/clear")
     public ResponseEntity<Cart> clearCart(@RequestHeader("Authorization") String jwt) throws Exception {
 
-        Cart cart = cartService.clearCart(jwt);
+        User user = userService.findUserByJwtToken(jwt);
+        Cart cart = cartService.clearCart(user.getId());
         return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 
     @GetMapping("/cart")
     public ResponseEntity<Cart> findUserCart(@RequestHeader("Authorization") String jwt) throws Exception {
 
-        Cart cart = cartService.findCartByUserId(jwt);
+        User user = userService.findUserByJwtToken(jwt);
+        Cart cart = cartService.findCartByUserId(user.getId());
         return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 
